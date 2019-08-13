@@ -3,6 +3,10 @@
 Admin panel and viewer for GOES Tools: https://github.com/pietern/goestools
 
 Note: These instructions reference PHP 7.3. Modify as needed for newer versions. A working installion of GOES Tools is assumed.
+
+## Video Demo
+https://youtu.be/jbbD2js6OFY
+
 ## Requirements
 * Nginx
 * PHP
