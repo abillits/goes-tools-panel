@@ -33,6 +33,7 @@ sudo apt-get install php7.3-fpm php7.3-mbstring php7.3-mysql php7.3-curl php7.3-
 ```
 
 **5**) Modify php.ini (/etc/php/7.3/fpm/php.ini):
+
 Find:
 ```
 max_execution_time = 30
@@ -44,6 +45,7 @@ max_execution_time = 300
 ```
 
 **6**) Modify nginx (/etc/nginx/sites-available/default):
+
 Find:
 ```
 root /var/www/html;
@@ -85,10 +87,12 @@ location ~ \.php$ {
 ```
        
 **7**) Copy GOES Tools Panel system files to:
+```
 /etc/logrotate.d/goestools
 /etc/systemd/system/goesproc.service
 /etc/systemd/system/goesrecv.service
 /home/pi/goesproc-goesr.conf
+```
 
 Note: Ensure that *your* goes goesrecv.conf is in /home/pi
 
