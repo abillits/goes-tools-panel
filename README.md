@@ -25,15 +25,48 @@ sudo apt-get install nginx
 sudo apt-get install php7.3-fpm php7.3-mbstring php7.3-mysql php7.3-curl php7.3-gd php7.3-curl php7.3-zip php7.3-xml -y
 
 **5**) Modify php.ini (/etc/php/7.3/fpm/php.ini):
-Find: max_execution_time = 30
-Replace: max_execution_time = 300
+Find:
+
+```
+max_execution_time = 30
+
+```
+
+Replace:
+
+```
+max_execution_time = 300
+
+```
+
 
 **6**) Modify nginx (/etc/nginx/sites-available/default):
-Find: root /var/www/html;
-Replace: root /var/www;
+Find:
+```
+root /var/www/html;
 
-Find: index index.html index.htm;
-Replace: index index.php index.html index.htm;
+```
+
+Replace:
+
+```
+root /var/www;
+
+```
+
+Find:
+
+```
+index index.html index.htm;
+
+```
+
+Replace:
+
+```
+index index.php index.html index.htm;
+
+```
 
 Find:
 
