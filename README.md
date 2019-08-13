@@ -11,18 +11,34 @@ Note: These instructions reference PHP 7.3. Modify as needed for newer versions.
 ## Installation
 
 **1**) Install ffmpeg
+
+```
 sudo apt-get install ffmpeg
+
+```
 
 Note: Optional but recommended if you have a PI 3 or 4.
 
 **2**) Remove apache (comes preinstalled on some distros):
+
+```
 sudo apt-get remove apache2
 
+```
+
 **3**) Install nginx:
+
+```
 sudo apt-get install nginx
 
+```
+
 **4**) Install PHP
+
+```
 sudo apt-get install php7.3-fpm php7.3-mbstring php7.3-mysql php7.3-curl php7.3-gd php7.3-curl php7.3-zip php7.3-xml -y
+
+```
 
 **5**) Modify php.ini (/etc/php/7.3/fpm/php.ini):
 Find:
@@ -101,8 +117,12 @@ location ~ \.php$ {
 Note: Ensure that *your* goes goesrecv.conf is in /home/pi
 
 **8**) Enable services:
+
+```
 sudo systemctl enable goesrecv.service
 sudo systemctl enable goesproc.service
+
+```
 
 **9**) Copy GOES Tools Panel www files to:
 /var/www
@@ -110,4 +130,8 @@ sudo systemctl enable goesproc.service
 **10**) Edit /var/www/config.php (instructions inside file)
 
 **11**) Restart:
+
+```
 sudo reboot
+
+```
