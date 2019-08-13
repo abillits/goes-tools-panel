@@ -9,6 +9,7 @@ Note: These instructions reference PHP 7.3. Modify as needed for newer versions.
 * FFmpeg (optional)
 
 ## Installation
+
 **1**) Install ffmpeg
 sudo apt-get install ffmpeg
 
@@ -35,6 +36,8 @@ Find: index index.html index.htm;
 Replace: index index.php index.html index.htm;
 
 Find:
+
+```
        location ~ \.php$ {
        include snippets/fastcgi-php.conf;
                # With php5-cgi alone:
@@ -43,13 +46,19 @@ Find:
                fastcgi_pass unix:/var/run/php5-fpm.sock;
         }
 
+```
+	
 Replace (modify for php version as needed):
-	location ~ \.php$ {
-       	include snippets/fastcgi-php.conf;
-		fastcgi_pass unix:/var/run/php/php7.3-fpm.sock;
-		fastcgi_read_timeout 300; 
-       }
 
+```
+location ~ \.php$ {
+	include snippets/fastcgi-php.conf;
+	fastcgi_pass unix:/var/run/php/php7.3-fpm.sock;
+		fastcgi_read_timeout 300; 
+	}
+
+```
+       
 **7**) Copy GOES Tools Panel system files to:
 /etc/logrotate.d/goestools
 /etc/systemd/system/goesproc.service
