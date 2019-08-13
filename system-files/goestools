@@ -1,0 +1,5 @@
+/var/log/goestools/*.log {
+	rotate 0
+	create 0644 root root
+	size 5M
+}
