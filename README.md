@@ -61,7 +61,8 @@ Note: Ensure that *your* goes goesrecv.conf is in /home/pi
 **8**) Enable services:
 sudo systemctl enable goesrecv.service
 sudo systemctl enable goesproc.service
-9#) Copy GOES Tools Panel www files to:
+
+**9**) Copy GOES Tools Panel www files to:
 /var/www
 
 **10**) Edit /var/www/config.php (instructions inside file)
