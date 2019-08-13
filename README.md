@@ -72,13 +72,13 @@ index index.php index.html index.htm;
 
 Find:
 ```
-       location ~ \.php$ {
-       include snippets/fastcgi-php.conf;
-               # With php5-cgi alone:
-               fastcgi_pass 127.0.0.1:9000;
-               # With php5-fpm:
-               fastcgi_pass unix:/var/run/php5-fpm.sock;
-        }
+location ~ \.php$ {
+	include snippets/fastcgi-php.conf;
+	# With php5-cgi alone:
+	fastcgi_pass 127.0.0.1:9000;
+	# With php5-fpm:
+	fastcgi_pass unix:/var/run/php5-fpm.sock;
+}
 ```
 	
 Replace (modify for php version as needed):
@@ -86,8 +86,8 @@ Replace (modify for php version as needed):
 location ~ \.php$ {
 	include snippets/fastcgi-php.conf;
 	fastcgi_pass unix:/var/run/php/php7.3-fpm.sock;
-		fastcgi_read_timeout 300; 
-	}
+	fastcgi_read_timeout 300; 
+}
 ```
        
 **7**) Copy GOES Tools Panel system files to:
