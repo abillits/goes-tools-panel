@@ -33,7 +33,7 @@ sudo apt-get install nginx
 
 **4**) Install PHP
 ```
-sudo apt-get install php7.3-fpm php7.3-mbstring php7.3-mysql php7.3-curl php7.3-gd php7.3-curl php7.3-zip php7.3-xml -y
+sudo apt-get install php7.3-fpm php7.3-mbstring php7.3-gd php7.3-curl php7.3-zip php7.3-xml -y
 ```
 
 **5**) Modify php.ini (/etc/php/7.3/fpm/php.ini):
