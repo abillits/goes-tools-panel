@@ -98,6 +98,7 @@ sudo systemctl enable goesrecv.service
 sudo systemctl enable goesproc.service
 ```
 
+
 **9**) Copy GOES Tools Panel www files to:
 /var/www
 
