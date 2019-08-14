@@ -7,7 +7,11 @@ Note: These instructions reference PHP 7.3. Modify as needed for newer versions.
 ## Video Demo
 https://youtu.be/jbbD2js6OFY
 
-## Requirements
+## Hardware Requirements
+* Minimum: Pi 3B+
+* Recommended: Pi 4B (2GB)
+
+## Package Requirements
 * Nginx
 * PHP
 * FFmpeg (optional)
