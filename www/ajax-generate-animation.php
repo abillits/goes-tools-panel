@@ -14,7 +14,7 @@ $name = $_POST['name'];
 $frames = maybe_unserialize($_POST['frames']);
 
 $animations_dir = BASE_DIR . 'data/animations/';
-$working_dir = BASE_DIR . 'data/work/' . md5($start . rand(1, 1000));
+$working_dir = BASE_DIR . 'work/' . md5($start . rand(1, 1000));
 $animation_path = $animations_dir . $name;
 
 if (!file_exists($animations_dir)) {
@@ -29,11 +29,11 @@ if (!file_exists($animations_dir)) {
 if (!file_exists($animations_dir)) {
   die("directory /data/animations/ does not exist and could not be created");
 }
-if (!file_exists(BASE_DIR . 'data/work')) {
-  mkdir(BASE_DIR . 'data/work', 0755);
+if (!file_exists(BASE_DIR . 'work')) {
+  mkdir(BASE_DIR . 'work', 0755);
 }
 if (!file_exists(BASE_DIR . 'data/work')) {
-  die("directory /data/work/ does not exist and could not be created");
+  die("directory /work/ does not exist and could not be created");
 }
 mkdir($working_dir, 0755);
 if (!file_exists($working_dir)) {

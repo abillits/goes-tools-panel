@@ -80,16 +80,16 @@ Find:
                fastcgi_pass unix:/var/run/php5-fpm.sock;
         }
 ```
-	
+
 Replace (modify for php version as needed):
 ```
 location ~ \.php$ {
 	include snippets/fastcgi-php.conf;
 	fastcgi_pass unix:/var/run/php/php7.3-fpm.sock;
-		fastcgi_read_timeout 300; 
+		fastcgi_read_timeout 300;
 	}
 ```
-       
+
 **7**) Copy GOES Tools Panel system files to:
 ```
 /etc/logrotate.d/goestools
@@ -112,7 +112,16 @@ sudo systemctl enable goesproc.service
 
 **10**) Edit /var/www/config.php (instructions inside file)
 
-**11**) Restart:
+**11**) Add cron tasks:
+```
+sudo crontab -l > goes-tools-panel-cron
+echo "0 * * * * /usr/bin/php /var/www/cron-60.php >/dev/null 2>&1" >> goes-tools-panel-cron
+echo "* * * * * /usr/bin/php /var/www/cron-1.php >/dev/null 2>&1" >> goes-tools-panel-cron
+sudo crontab goes-tools-panel-cron
+rm goes-tools-panel-cron
+```
+
+**12**) Restart:
 ```
 sudo reboot
 ```

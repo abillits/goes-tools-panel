@@ -10,7 +10,7 @@ if ( !defined('BASE_DIR') ) {
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
-define('VERSION', '0.1');
+define('VERSION', '0.0.1');
 ###########################################
 require_once(BASE_DIR . 'config.php');
 require_once(BASE_DIR . 'functions.php');

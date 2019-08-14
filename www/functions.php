@@ -37,17 +37,6 @@ function get_timestamp_from_imagery_file($file) {
   return strtotime(str_replace(".png","",$file_exploded[count($file_exploded) - 1]));
 }
 
-function save_base64_image_to_file($base64_image, $path) {
-  $base64_image = trim($base64_image);
-  $base64_image = str_replace('data:image/png;base64,', '', $base64_image);
-  $base64_image = str_replace('data:image/jpg;base64,', '', $base64_image);
-  $base64_image = str_replace('data:image/jpeg;base64,', '', $base64_image);
-  $base64_image = str_replace('data:image/gif;base64,', '', $base64_image);
-  $base64_image = str_replace(' ', '+', $base64_image);
-  $image_data = base64_decode($base64_image);
-  file_put_contents($path, $image_data);
-}
-
 function check_ajax_key($key = null){
   if (!isset($key)) {
     foreach (apache_request_headers() as $name => $value) {
@@ -147,88 +136,6 @@ function get_disk_used_percent() {
   return $disk_used_percent;
 }
 
-function log_error($raw_msg) {
-  if (strpos(strtolower($raw_msg), 'notice') !== false) {
-    //notice
-    $max = 50;
-    $notice_log = get_server_meta("notice-log", array());
-    $new_notice_log = array();
-    krsort($notice_log);
-    if (count($notice_log) >= $max) {
-      $i = 0;
-      foreach ($notice_log as $time => $notice) {
-        $i = $i + 1;
-        if ($i == $max) {
-          break;
-        } else {
-          $new_notice_log[$time] = $notice;
-        }
-      }
-    } else {
-      $new_notice_log = $notice_log;
-    }
-    $new_notice_log[time()] = str_replace("Notice: ", "",$raw_msg);
-    ksort($new_notice_log);
-    update_server_meta("notice-log-count", count($new_notice_log));
-    update_server_meta("notice-log", $new_notice_log);
-  } else if (strpos(strtolower($raw_msg), 'warning') !== false) {
-    //warning
-    $max = 50;
-    $warning_log = get_server_meta("warning-log", array());
-    $new_warning_log = array();
-    krsort($warning_log);
-    if (count($warning_log) >= $max) {
-      $i = 0;
-      foreach ($warning_log as $time => $warning) {
-        $i = $i + 1;
-        if ($i == $max) {
-          break;
-        } else {
-          $new_warning_log[$time] = $warning;
-        }
-      }
-    } else {
-      $new_warning_log = $warning_log;
-    }
-    $new_warning_log[time()] = str_replace("Warning: ", "",$raw_msg);
-    ksort($new_warning_log);
-    update_server_meta("warning-log-count", count($new_warning_log));
-    update_server_meta("warning-log", $new_warning_log);
-  } else {
-    //error
-    $max = 50;
-    $error_log = get_server_meta("error-log", array());
-    $new_error_log = array();
-    krsort($error_log);
-    if (count($error_log) >= $max) {
-      $i = 0;
-      foreach ($error_log as $time => $error) {
-        $i = $i + 1;
-        if ($i == $max) {
-          break;
-        } else {
-          $new_error_log[$time] = $error;
-        }
-      }
-    } else {
-      $new_error_log = $error_log;
-    }
-    $new_error_log[time()] = str_replace("Error: ", "",$raw_msg);
-    ksort($new_error_log);
-    update_server_meta("error-log-count", count($new_error_log));
-    update_server_meta("error-log", $new_error_log);
-  }
-}
-
-function log_continue($raw_msg) {
-  log_error($raw_msg);
-}
-
-function log_die($raw_msg) {
-  log_error($raw_msg);
-  die($raw_msg);
-}
-
 function exec_timeout($cmd, $timeout) {
   // File descriptors passed to the process.
   $descriptors = array(
@@ -301,30 +208,6 @@ function exec_timeout($cmd, $timeout) {
   return $buffer;
 }
 
-function get_server_meta($meta_key, $default){
-	if (file_exists(BASE_DIR . 'server-meta/' . meta_filename($meta_key) .'.txt')) {
-    $meta_value = file_get_contents(BASE_DIR . 'server-meta/' . meta_filename($meta_key) .'.txt', true);
-		return maybe_unserialize($meta_value);
-	} else {
-    return $default;
-  }
-}
-
-function update_server_meta($meta_key, $meta_value){
-  $meta_value = maybe_serialize($meta_value);
-  $file = BASE_DIR . 'server-meta/' . meta_filename($meta_key) .'.txt';
-	file_put_contents($file, $meta_value);
-  @chmod($file, 0777);
-}
-
-function remove_server_meta($meta_key){
-	if (file_exists(BASE_DIR . 'server-meta/' . meta_filename($meta_key) .'.txt')) {
-    $file = BASE_DIR . 'server-meta/' . meta_filename($meta_key) .'.txt';
-    chmod($file, 0777);
-		unlink($file);
-	}
-}
-
 function maybe_serialize($data){
     if (is_array($data) || is_object($data))
             return serialize($data);
@@ -384,7 +267,7 @@ function rrmdir($path){
 }
 
 function clean_work_dir($min = 60) {
-  $directories = glob(BASE_DIR . '/data/work/*');
+  $directories = glob(BASE_DIR . 'work/*');
   $now   = time();
   foreach ($directories as $directory) {
     if (is_dir($directory)) {
@@ -392,6 +275,27 @@ function clean_work_dir($min = 60) {
         rrmdir($directory);
       }
     }
+  }
+}
+
+function clean_data_dir($dir = null, $hours = null) {
+  if (!CLEAN_OLDER_THAN_X_HOURS) {
+    return false;
+  }
+  if (empty($dir)) {
+    $dir = BASE_DIR . 'data/';
+  }
+  if (empty($hours)) {
+    $hours = CLEAN_OLDER_THAN_X_HOURS;
+  }
+  $then = time() - (3600 * ($hours + 1));
+  $objects = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(realpath($dir)), RecursiveIteratorIterator::SELF_FIRST);
+  foreach($objects as $path => $object){
+      if (!is_dir($path)) {
+        if (filemtime($path) <= $then) {
+          @unlink($path);
+        }
+      }
   }
 }
 
@@ -417,102 +321,6 @@ function get_server_cpu_loads() {
   return $cpu;
 }
 
-/*
-function get_server_load_array() {
-    if (is_readable("/proc/stat"))
-    {
-        $stats = @file_get_contents("/proc/stat");
-
-        if ($stats !== false)
-        {
-            // Remove double spaces to make it easier to extract values with explode()
-            $stats = preg_replace("/[[:blank:]]+/", " ", $stats);
-
-            // Separate lines
-            $stats = str_replace(array("\r\n", "\n\r", "\r"), "\n", $stats);
-            $stats = explode("\n", $stats);
-
-            // Separate values and find line for main CPU load
-            foreach ($stats as $statLine)
-            {
-                $statLineData = explode(" ", trim($statLine));
-
-                // Found!
-                if
-                (
-                    (count($statLineData) >= 5) &&
-                    ($statLineData[0] == "cpu")
-                )
-                {
-                    return array(
-                        $statLineData[1],
-                        $statLineData[2],
-                        $statLineData[3],
-                        $statLineData[4],
-                    );
-                }
-            }
-        }
-    }
-
-    return null;
-}
-
-function get_server_load_percentage() {
-    $load = null;
-
-    if (stristr(PHP_OS, "win"))
-    {
-        $cmd = "wmic cpu get loadpercentage /all";
-        @exec($cmd, $output);
-
-        if ($output)
-        {
-            foreach ($output as $line)
-            {
-                if ($line && preg_match("/^[0-9]+\$/", $line))
-                {
-                    $load = $line;
-                    break;
-                }
-            }
-        }
-    }
-    else
-    {
-        if (is_readable("/proc/stat"))
-        {
-            // Collect 2 samples - each with 1 second period
-            // See: https://de.wikipedia.org/wiki/Load#Der_Load_Average_auf_Unix-Systemen
-            $statData1 = get_server_load_array();
-            sleep(1);
-            $statData2 = get_server_load_array();
-
-            if
-            (
-                (!is_null($statData1)) &&
-                (!is_null($statData2))
-            )
-            {
-                // Get difference
-                $statData2[0] -= $statData1[0];
-                $statData2[1] -= $statData1[1];
-                $statData2[2] -= $statData1[2];
-                $statData2[3] -= $statData1[3];
-
-                // Sum up the 4 values for User, Nice, System and Idle and calculate
-                // the percentage of idle time (which is part of the 4 values!)
-                $cpuTime = $statData2[0] + $statData2[1] + $statData2[2] + $statData2[3];
-
-                // Invert percentage to get CPU time, not idle time
-                $load = 100 - ($statData2[3] * 100 / $cpuTime);
-            }
-        }
-    }
-
-    return $load;
-}
-*/
 function get_server_memory_usage($getPercentage = true) {
     $memoryTotal = null;
     $memoryFree = null;
@@ -815,91 +623,5 @@ function dater($date = null, $format = null) {
           return  $time_zone;
       }
       return 'unknown';
-  }
-
-  function auto_xy($value, $width, $height) {
-    global $field_calculator;
-    $value = str_replace("MAPWIDTH",$width,$value);
-    $value = str_replace("MAPHEIGHT",$height,$value);
-    $value = str_replace("WIDTH",$width,$value);
-    $value = str_replace("HEIGHT",$height,$value);
-    $value = str_replace(" ","",$value);
-    $value = $field_calculator->calculate($value);
-    if (!is_numeric($value)) {
-      $value = 50;
-    }
-    return $value;
-  }
-
-  class Field_calculate {
-      const PATTERN = '/(?:\-?\d+(?:\.?\d+)?[\+\-\*\/])+\-?\d+(?:\.?\d+)?/';
-
-      const PARENTHESIS_DEPTH = 10;
-
-      public function calculate($input){
-          if(strpos($input, '+') != null || strpos($input, '-') != null || strpos($input, '/') != null || strpos($input, '*') != null){
-              //  Remove white spaces and invalid math chars
-              $input = str_replace(',', '.', $input);
-              $input = preg_replace('[^0-9\.\+\-\*\/\(\)]', '', $input);
-
-              //  Calculate each of the parenthesis from the top
-              $i = 0;
-              while(strpos($input, '(') || strpos($input, ')')){
-                  $input = preg_replace_callback('/\(([^\(\)]+)\)/', 'self::callback', $input);
-
-                  $i++;
-                  if($i > self::PARENTHESIS_DEPTH){
-                      break;
-                  }
-              }
-
-              //  Calculate the result
-              if(preg_match(self::PATTERN, $input, $match)){
-                  return $this->compute($match[0]);
-              }
-              // To handle the special case of expressions surrounded by global parenthesis like "(1+1)"
-              if(is_numeric($input)){
-                  return $input;
-              }
-
-              return 0;
-          }
-
-          return $input;
-      }
-
-      private function compute($input){
-          $compute = @create_function('', 'return '.$input.';');
-
-          return 0 + $compute();
-      }
-
-      private function callback($input){
-          if(is_numeric($input[1])){
-              return $input[1];
-          }
-          elseif(preg_match(self::PATTERN, $input[1], $match)){
-              return $this->compute($match[0]);
-          }
-
-          return 0;
-      }
-  }
-
-  function closest_number($search, $arr) {
-     $closest = null;
-     foreach ($arr as $item) {
-        if ($closest === null || abs($search - $closest) > abs($item - $search)) {
-           $closest = $item;
-        }
-     }
-     return $closest;
-  }
-  function greater_number($num1, $num2){
-    if ($num1 > $num2) {
-      return $num1;
-    } else {
-      return $num2;
-    }
   }
 ?>
