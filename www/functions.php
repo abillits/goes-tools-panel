@@ -1,21 +1,219 @@
 <?php
 //===================================================================//
-function imagery_copy_resize($original_file, $target_file) {
+function process_signal_data($signal_data) {
+  $vit = 0;
+  $ok = 0;
+  $drop = 0;
+  foreach ($signal_data as $signal_data_item) {
+    $vit = $vit + $signal_data_item['vit'];
+    $ok = $ok + $signal_data_item['ok'];
+    $drop = $drop + $signal_data_item['drop'];
+  }
+  $vit = round($vit / count($signal_data));
+  unset($signal_data);
+
+  $new_signal_data = array();
+  $new_signal_data['vit'] = $vit;
+  $new_signal_data['ok'] = $ok;
+  $new_signal_data['drop'] = $drop;
+
+  $signal_data = get_meta("signal-data", array());
+  $signal_data[time()] = $new_signal_data;
+  unset($new_signal_data);
+
+  //krsort($signal_data);
+  ksort($signal_data);
+  update_meta("signal-data", array_slice($signal_data, 0, SIGNAL_STATUS_CHART_MINUTES * 6, true));
+}
+
+function signal_data_listener($run_for = 5) {
+  $signal_data = array();
+  $last_signal_process = time();
+
+  //Create socket.
+  $socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
+  if (!$socket) { die("socket_create failed.\n"); }
+
+  //Set socket options.
+  socket_set_nonblock($socket);
+  socket_set_option($socket, SOL_SOCKET, SO_BROADCAST, 1);
+  socket_set_option($socket, SOL_SOCKET, SO_REUSEADDR, 1);
+  if (defined('SO_REUSEPORT'))
+    socket_set_option($socket, SOL_SOCKET, SO_REUSEPORT, 1);
+
+  //Bind to any address & port 55554.
+  if(!socket_bind($socket, '0.0.0.0', 8125))
+    die("socket_bind failed.\n");
+
+  //Wait for data.
+  $read = array($socket); $write = NULL; $except = NULL;
+  while(socket_select($read, $write, $except, NULL)) {
+    while(is_string($data = socket_read($socket, 5120))) {
+      if (contains("packets",$data)) {
+        $data_exploded = explode("|", $data);
+        $new_signal_data = array();
+        $new_signal_data['vit'] = str_replace("h
+viterbi_errors:", "", $data_exploded[3]);
+        $new_signal_data['ok'] = str_replace("packets_ok:", "", $data_exploded[0]);
+        $new_signal_data['drop'] = str_replace("c
+packets_dropped:", "", $data_exploded[1]);
+        $signal_data[] = $new_signal_data;
+        unset($new_signal_data);
+        if (time() - $last_signal_process >= 10) {
+          process_signal_data($signal_data);
+          $last_signal_process = time();
+          unset($signal_data);
+          $signal_data = array();
+        }
+        if (get_runtime() >= $run_for ) {
+          die();
+          exit();
+        }
+      }
+    }
+    if (time() - $last_signal_process >= 10) {
+      process_signal_data($signal_data);
+      $last_signal_process = time();
+      unset($signal_data);
+      $signal_data = array();
+    }
+    if (get_runtime() >= $run_for ) {
+      die();
+      exit();
+    }
+  }
+}
+
+function meta_filename($meta_key){
+	//return md5($meta_key);
+  return slugify($meta_key);
+}
+
+function get_meta($meta_key, $default){
+	if (file_exists(BASE_DIR . 'meta/' . meta_filename($meta_key) .'.txt')) {
+    $meta_value = file_get_contents(BASE_DIR . 'meta/' . meta_filename($meta_key) .'.txt', true);
+		return maybe_unserialize($meta_value);
+	} else {
+    return $default;
+  }
+}
+
+function update_meta($meta_key, $meta_value){
+  $meta_value = maybe_serialize($meta_value);
+  $file = BASE_DIR . 'meta/' . meta_filename($meta_key) .'.txt';
+	file_put_contents($file, $meta_value);
+  @chmod($file, 0777);
+}
+
+function remove_meta($meta_key){
+	if (file_exists(BASE_DIR . 'meta/' . meta_filename($meta_key) .'.txt')) {
+    $file = BASE_DIR . 'meta/' . meta_filename($meta_key) .'.txt';
+    chmod($file, 0777);
+		unlink($file);
+	}
+}
+
+function get_runtime() {
+  global $start;
+  return time() - $start;
+}
+
+function get_latest_data_files($num = 10) {
+  $path = BASE_DIR . 'data/';
+  $files = array();
+  $directory = new RecursiveDirectoryIterator(
+      $path,
+      FilesystemIterator::KEY_AS_PATHNAME |
+      FilesystemIterator::CURRENT_AS_FILEINFO |
+      FilesystemIterator::SKIP_DOTS
+  );
+  $iterator = new RecursiveIteratorIterator(
+      $directory,
+      RecursiveIteratorIterator::SELF_FIRST
+  );
+  $resultFile = $iterator->current();
+  foreach($iterator as $file) {
+    if (!is_dir($file->getPathname()) && !contains('animations', $file->getPathname())) {
+      $files[filemtime($file->getPathname())] = str_replace(BASE_DIR . 'data/', "/data/", $file->getPathname());
+    }
+  }
+  krsort($files);
+  return array_slice($files, 0, $num, true);
+}
+
+function process_custom_products(){
+  global $custom_products;
+  foreach ($custom_products as $custom_product) {
+    if (!file_exists($custom_product['src-dir'])) {
+      //invalid source directory - ignore
+      continue;
+    }
+    if (!file_exists($custom_product['dst-dir'])) {
+      mkdir($custom_product['dst-dir'], 0755, true);
+      if (!file_exists($custom_product['dst-dir'])) {
+        //could not create custom product directory - we'll need to add some error handling/notification here
+        continue;
+      }
+    }
+    //---------------------------------//
+    $dir = opendir($custom_product['src-dir']);
+    //clearstatcache();
+    $then = time() - 43200;
+    $new_files = array();
+    while(false != ($file = readdir($dir))) {
+        if ( substr($file,-4) == ".png" ) {
+            if (filemtime($custom_product['src-dir'] . $file) >= $then) {
+              if (!file_exists($custom_product['dst-dir'] . $file)) {
+                $new_files[] = $file;
+              }
+            }
+        }
+    }
+    closedir($dir);
+    unset($file);
+    //---------------------------------//
+    foreach ($new_files as $new_file) {
+      $img = imagecreatefrompng($custom_product['src-dir'] . $new_file);
+      $new_image = imagecreatetruecolor($custom_product['dst-w'], $custom_product['dst-h']);
+      imagealphablending($new_image, false);
+      imagesavealpha($new_image,true);
+      $transparency = imagecolorallocatealpha($new_image, 255, 255, 255, 127);
+      imagefilledrectangle($new_image, 0, 0, $custom_product['dst-w'], $custom_product['dst-h'], $transparency);
+      imagecopyresampled($new_image, $img, 0, 0,  $custom_product['crop-x'], $custom_product['crop-y'], $custom_product['dst-w'], $custom_product['dst-h'], $custom_product['crop-w'], $custom_product['crop-h']);
+      imagepng($new_image,$custom_product['dst-dir'] . $new_file);
+      imagedestroy($new_image);
+    }
+    //---------------------------------//
+  }
+}
+function imagery_copy_resize($original_file, $target_file, $max_width = null, $max_height = null) {
+  if (!$max_width) {
+    $max_width = ANIMATION_MAX_WIDTH;
+  }
+  if (!$max_height) {
+    $max_height = ANIMATION_MAX_HEIGHT;
+  }
   list($width, $height) = getimagesize($original_file);
   $new_width = $width;
   $new_height = $height;
-  if (ANIMATION_MAX_HEIGHT) {
-    if ($height > ANIMATION_MAX_HEIGHT) {
-      $percent = (100 / $height) * ANIMATION_MAX_HEIGHT;
-      $new_height = ANIMATION_MAX_HEIGHT;
+
+  if ($max_height) {
+    if ($height > $max_height) {
+      $percent = (100 / $height) * $max_height;
+      $new_height = $max_height;
       $new_width = ($width / 100) * $percent;
     }
   }
-  if (ANIMATION_MAX_WIDTH) {
-    if ($width > ANIMATION_MAX_WIDTH) {
-      $percent = (100 / $width) * ANIMATION_MAX_WIDTH;
-      $new_width = ANIMATION_MAX_WIDTH;
+  if ($max_width) {
+    if ($width > $max_width) {
+      $percent = (100 / $width) * $max_width;
+      $new_width = $max_width;
       $new_height = ($height / 100) * $percent;
+    }
+    if ($new_width > $max_width) {
+      $percent = (100 / $new_width) * $max_width;
+      $new_width = $max_width;
+      $new_height = ($new_height / 100) * $percent;
     }
   }
   if ($width != $new_width || $height != $new_height) {
@@ -109,23 +307,23 @@ function get_goesproc_log_lines($lines_to_get) {
   return $lines;
 }
 
-function get_file_type_from_goesproc_log_line($line) {
-  if (strpos($line, 'goes16') !== false) {
+function get_file_type_from_path($file) {
+  if (strpos($file, 'goes16') !== false) {
     return "GOES 16";
-  } else if (strpos(strtolower($line), 'goes17') !== false) {
+  } else if (strpos(strtolower($file), 'goes17') !== false) {
       return "GOES 17";
-  } else if (strpos(strtolower($line), 'nws') !== false) {
+  } else if (strpos(strtolower($file), 'nws') !== false) {
       return "NWS";
-  } else if (strpos(strtolower($line), 'text') !== false) {
+  } else if (strpos(strtolower($file), 'text') !== false) {
       return "TEXT";
   } else {
     return "?";
   }
 }
 
-function get_file_name_from_goesproc_log_line($line) {
-  $line_exploded = explode("/", $line);
-  return $line_exploded[count($line_exploded) - 1];
+function get_file_name_from_path($file) {
+  $file_exploded = explode("/", $file);
+  return $file_exploded[count($file_exploded) - 1];
 }
 
 function get_disk_used_percent() {

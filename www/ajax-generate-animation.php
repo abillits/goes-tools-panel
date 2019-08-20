@@ -32,7 +32,7 @@ if (!file_exists($animations_dir)) {
 if (!file_exists(BASE_DIR . 'work')) {
   mkdir(BASE_DIR . 'work', 0755);
 }
-if (!file_exists(BASE_DIR . 'data/work')) {
+if (!file_exists(BASE_DIR . 'work')) {
   die("directory /work/ does not exist and could not be created");
 }
 mkdir($working_dir, 0755);
@@ -48,8 +48,8 @@ $i = 0;
 while($i <= $frames_count_minus) {
   if ($i == $frames_count_minus) {
     imagery_copy_resize(BASE_DIR . ltrim($frames[$i]['url'],"/"), $working_dir .  '/temp-' . $i . '.png');
-    imagery_copy_resize(BASE_DIR . ltrim($frames[$i]['url'],"/"), $working_dir .  '/temp-' . ($i + 1) . '.png');
-    imagery_copy_resize(BASE_DIR . ltrim($frames[$i]['url'],"/"), $working_dir .  '/temp-' . ($i + 2) . '.png');
+    copy($working_dir .  '/temp-' . $i . '.png', $working_dir .  '/temp-' . ($i + 1) . '.png');
+    copy($working_dir .  '/temp-' . $i . '.png', $working_dir .  '/temp-' . ($i + 2) . '.png');
   } else {
     imagery_copy_resize(BASE_DIR . ltrim($frames[$i]['url'],"/"), $working_dir .  '/temp-' . $i . '.png');
   }
@@ -59,7 +59,7 @@ while($i <= $frames_count_minus) {
 if ($frame_count < 5){
   $frame_rate = 1;
 } else {
-  $frame_rate = 2;
+  $frame_rate = 3;
 }
 
 $start_number = "0";

@@ -8,8 +8,8 @@ After=network.target goesrecv.service
 
 [Service]
 WorkingDirectory=/var/www/data
-#ExecStart=/usr/local/bin/goesproc -c /home/pi/goesproc-goesr.conf -m packet --subscribe tcp://127.0.0.1:5004
-ExecStart=/bin/sh -c '/usr/local/bin/goesproc -c /home/pi/goesproc-goesr.conf -m packet --subscribe tcp://127.0.0.1:5004 > /var/log/goestools/goesproc.log'
+ExecStart=/usr/local/bin/goesproc -c /home/pi/goesproc-goesr.conf -m packet --subscribe tcp://127.0.0.1:5004
+#ExecStart=/bin/sh -c '/usr/local/bin/goesproc -c /home/pi/goesproc.conf -m packet --subscribe tcp://127.0.0.1:5004 > /var/log/goestools/goesproc.log'
 StandardOutput=null
 Type=simple
 Restart=on-failure
@@ -17,4 +17,3 @@ RestartSec=30
 
 [Install]
 WantedBy=default.target
-

@@ -68,12 +68,10 @@ if ($product_count > 0 && isset($_GET['p'])) {
                                             <option <?php if (isset($_GET['t']) && $_GET['t'] == "past-4") { echo 'selected="selected"'; } ?> value="past-4">PAST 4 HOURS</option>
                                             <option <?php if (isset($_GET['t']) && $_GET['t'] == "past-6") { echo 'selected="selected"'; } ?> value="past-6">PAST 6 HOURS</option>
                                             <option <?php if (isset($_GET['t']) && $_GET['t'] == "past-12") { echo 'selected="selected"'; } ?> value="past-12">PAST 12 HOURS</option>
-                                            <?php if (ANIMATION_GEN == "server") { ?>
                                             <option <?php if (isset($_GET['t']) && $_GET['t'] == "past-18") { echo 'selected="selected"'; } ?> value="past-18">PAST 18 HOURS</option>
                                             <option <?php if (isset($_GET['t']) && $_GET['t'] == "past-24") { echo 'selected="selected"'; } ?> value="past-24">PAST DAY</option>
                                             <!--<option <?php if (isset($_GET['t']) && $_GET['t'] == "past-48") { echo 'selected="selected"'; } ?> value="past-48">PAST 2 DAYS</option>-->
                                             <!--<option <?php if (isset($_GET['t']) && $_GET['t'] == "past-72") { echo 'selected="selected"'; } ?> value="past-72">PAST 3 DAYS</option>-->
-                                            <?php } ?>
                                         </select>
                                       </td>
                                       <td style="width:1%"></td>
@@ -222,75 +220,29 @@ if ($product_count > 0 && isset($_GET['p'])) {
                   imageProgress.innerHTML = '';
                   <?php
                 } else {
-                  if (ANIMATION_GEN == "server") {
-                    //generate animation on server
-                    ?>
-                    imageProgress = document.getElementById("progress");
-                    imageProgress.innerHTML = 'Generating...';
-                    $.post("ajax-generate-animation.php",
-                    {
-                      name: '<?php echo $image_file_name; ?>',
-                      frames: '<?php echo serialize($frames); ?>'
-                    },
-                    function(data, status){
-                      if (data != "success") {
-                        imageProgress = document.getElementById("progress");
-                        imageProgress.innerHTML = 'Error generating animation: ' + data;
-                      } else {
-                        imageProgress = document.getElementById("progress");
-                        imageProgress.innerHTML = 'Loading...';
-                        animatedImage = document.getElementById("product-image");
-                        animatedImage.src = '/data/animations/<?php echo $image_file_name; ?>?<?php echo time(); ?>';
-                        animatedImage.alt = '<?php echo $image_file_name; ?>';
-                        imageProgress.innerHTML = '';
-                      }
-                      //alert("Data: " + data + "\nStatus: " + status);
-                    });
-                    <?php
-                  } else {
-                    //generate animation on client
-                    ?>
-                    imageProgress = document.getElementById("progress");
-                    document.getElementById("progress").innerHTML = 'Generating: 1%';
-                    gifshot.createGIF({
-                      'gifWidth': <?php echo $width; ?>,
-                      'gifHeight': <?php echo $height; ?>,
-                      'frameDuration': <?php if (count($frames) < 5) { echo "10"; } else { echo "5"; } ?>,
-                      'sampleInterval': 10,
-                      'saveRenderingContexts': false,
-                      'progressCallback': function(captureProgress) { document.getElementById("progress").innerHTML = 'Generating: ' + Math.round(captureProgress * 100) + '%'; },
-                      //'completeCallback': function() {},
-                      'images': [
-                        <?php
-                        $i = 0;
-                        $frames_count_minus = count($frames) - 1;
-                        while($i <= $frames_count_minus) {
-                          echo "{ src:'" . $frames[$i]['url'] . "', text:'" . $frames[$i]['time'] . "' }";
-                          if ($i != $frames_count_minus) {
-                            echo ",";
-                          }
-                          $i++;
-                        }
-                        ?>
-                      ]
-                    },function(obj) {
-                      if(!obj.error) {
-                        var image = obj.image;
-                        if (image == "") {
-                          imageProgress = document.getElementById("progress");
-                          imageProgress.innerHTML = 'Could not generate animation...';
-                        } else {
-                          imageProgress = document.getElementById("progress");
-                          imageProgress.innerHTML = 'Loading...';
-                          imageProgress.innerHTML = '';
-                          animatedImage = document.getElementById("product-image");
-                          animatedImage.src = image;
-                          animatedImage.alt = '<?php echo $image_file_name; ?>';
-                        }
-                      }
-                    });
-                    <?php
-                  }
+                  ?>
+                  imageProgress = document.getElementById("progress");
+                  imageProgress.innerHTML = 'Generating...';
+                  $.post("ajax-generate-animation.php",
+                  {
+                    name: '<?php echo $image_file_name; ?>',
+                    frames: '<?php echo serialize($frames); ?>'
+                  },
+                  function(data, status){
+                    if (data != "success") {
+                      imageProgress = document.getElementById("progress");
+                      imageProgress.innerHTML = 'Error generating animation: ' + data;
+                    } else {
+                      imageProgress = document.getElementById("progress");
+                      imageProgress.innerHTML = 'Loading...';
+                      animatedImage = document.getElementById("product-image");
+                      animatedImage.src = '/data/animations/<?php echo $image_file_name; ?>?<?php echo time(); ?>';
+                      animatedImage.alt = '<?php echo $image_file_name; ?>';
+                      imageProgress.innerHTML = '';
+                    }
+                    //alert("Data: " + data + "\nStatus: " + status);
+                  });
+                  <?php
                 }
               }
             ?>

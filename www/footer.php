@@ -6,7 +6,7 @@
                     <a href="https://github.com/pietern/goestools"><i class="fa fa-github"></i> GOES Tools</a>
                 </li>
                 <li>
-                    <a href="#"><i class="fa fa-github"></i> GOES Tools Panel</a>
+                    <a href="https://github.com/doubleohwhatever/goes-tools-panel/"><i class="fa fa-github"></i> GOES Tools Panel</a>
                 </li>
             </ul>
             <p class="copyright text-center">

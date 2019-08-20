@@ -2,19 +2,18 @@
 
 Admin panel and viewer for GOES Tools: https://github.com/pietern/goestools
 
-Note: These instructions reference PHP 7.3. Modify as needed for newer versions. A working installion of GOES Tools is assumed.
+Note: These instructions reference PHP 7.3. Modify as needed for newer versions. A working installation of GOES Tools is assumed.
 
 ## Video Demo
 https://youtu.be/jbbD2js6OFY
 
 ## Hardware Requirements
-* Minimum: Pi 3B+
-* Recommended: Pi 4B (2GB)
+* Recommended: Pi 4B (2GB or 4GB)
 
 ## Package Requirements
 * Nginx
 * PHP
-* FFmpeg (optional)
+* FFmpeg
 
 ## Installation
 
@@ -22,8 +21,6 @@ https://youtu.be/jbbD2js6OFY
 ```
 sudo apt-get install ffmpeg
 ```
-
-Note: Optional but recommended if you have a PI 3 or 4.
 
 **2**) Remove apache (comes preinstalled on some distros):
 ```
@@ -49,7 +46,7 @@ max_execution_time = 30
 
 Replace:
 ```
-max_execution_time = 300
+max_execution_time = 365
 ```
 
 **6**) Modify nginx (/etc/nginx/sites-available/default):
@@ -90,16 +87,15 @@ Replace (modify for php version as needed):
 location ~ \.php$ {
 	include snippets/fastcgi-php.conf;
 	fastcgi_pass unix:/var/run/php/php7.3-fpm.sock;
-		fastcgi_read_timeout 300;
+		fastcgi_read_timeout 365;
 	}
 ```
 
 **7**) Copy GOES Tools Panel system files to:
 ```
-/etc/logrotate.d/goestools
 /etc/systemd/system/goesproc.service
 /etc/systemd/system/goesrecv.service
-/home/pi/goesproc-goesr.conf
+/home/pi/goesproc.conf
 ```
 
 Note: Ensure that *your* goes goesrecv.conf is in /home/pi
@@ -121,6 +117,7 @@ sudo systemctl enable goesproc.service
 sudo crontab -l > goes-tools-panel-cron
 echo "0 * * * * /usr/bin/php /var/www/cron-60.php >/dev/null 2>&1" >> goes-tools-panel-cron
 echo "* * * * * /usr/bin/php /var/www/cron-1.php >/dev/null 2>&1" >> goes-tools-panel-cron
+echo "*/5 * * * * /usr/bin/php /var/www/cron-signal-data.php >/dev/null 2>&1" >> goes-tools-panel-cron
 sudo crontab goes-tools-panel-cron
 rm goes-tools-panel-cron
 ```

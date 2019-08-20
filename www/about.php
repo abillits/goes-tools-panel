@@ -35,11 +35,7 @@ $title = "About";
                                               <td><a href="https://github.com/gionkunz/chartist-js">https://github.com/gionkunz/chartist-js</a></td>
                                           </tr>
                                           <tr>
-                                              <td>Client-side Animations</td>
-                                              <td><a href="https://github.com/yahoo/gifshot">https://github.com/yahoo/gifshot</a></td>
-                                          </tr>
-                                          <tr>
-                                              <td>Server-side Animations</td>
+                                              <td>Animations</td>
                                               <td><a href="https://github.com/FFmpeg/FFmpeg">https://github.com/FFmpeg/FFmpeg</a></td>
                                           </tr>
                                       </tbody>

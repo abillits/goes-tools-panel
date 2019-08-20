@@ -1,6 +1,7 @@
 <?php require_once('load.php'); ?>
 <?php
 $title = "Signal Status";
+
 ?>
 <?php require_once('header.php'); ?>
             <div class="content">
@@ -101,85 +102,85 @@ $title = "Signal Status";
                 }
             } );
             //=======================================//
-            var chartSignalData ={
-            series: [
-            {
-            name: 'viterbi',
-            data: []
-            },
-            {
-            name: 'packets',
-            data: []
-            },
-            {
-            name: 'drops',
-            data: []
-            }
-            ]
-            }
+              var chartSignalData ={
+              series: [
+              {
+              name: 'viterbi',
+              data: []
+              },
+              {
+              name: 'packets',
+              data: []
+              },
+              {
+              name: 'drops',
+              data: []
+              }
+              ]
+              }
 
-            var chartSignalOptions = {
-            lineSmooth: false,
-            axisX: {
-            type: Chartist.FixedScaleAxis,
-            divisor: 5,
-            labelInterpolationFnc: function(value) {
-            return moment(value).format('h:mm A');
-            }
-            }
-            }
+              var chartSignalOptions = {
+              lineSmooth: false,
+              axisX: {
+              type: Chartist.FixedScaleAxis,
+              divisor: 5,
+              labelInterpolationFnc: function(value) {
+              return moment(value).format('h:mm A');
+              }
+              }
+              }
 
-            var chartSignal = new Chartist.Line('#signal', chartSignalData, chartSignalOptions);
+              var chartSignal = new Chartist.Line('#signal', chartSignalData, chartSignalOptions);
 
-            loadSignal();
-            var tmrSignal = setInterval(loadSignal, 10000);
-            function loadSignal() {
-            $.ajax({
-            url : "ajax-signal.php",
-            dataType: "json",
-            success : function (data) {
-              var dataViterbi = data.viterbi,
-                  dataPackets = data.packets,
-                  dataDrops = data.drops;
+              loadSignal();
+              var tmrSignal = setInterval(loadSignal, 10000);
+              function loadSignal() {
+              $.ajax({
+              url : "ajax-signal.php",
+              dataType: "json",
+              success : function (data) {
+                var dataViterbi = data.viterbi,
+                    dataPackets = data.packets,
+                    dataDrops = data.drops;
 
-              var chartSignalData = {
-                series: [
-                  {
-                    name: 'viterbi',
-                    data: dataViterbi
-                  },
-                  {
-                    name: 'packets',
-                    data: dataPackets
-                  },
-                  {
-                    name: 'drops',
-                    data: dataDrops
-                  }
-                ]
-              };
-              chartSignal.update(chartSignalData);
-              var d = new Date();
-              $("time.timeagoSignal").attr('datetime',d.toISOString());
-              $("time.timeagoSignal").timeago();
-            }
-            });
-            }
-            //=======================================//
-            loadFiles();
-            var tmrFiles = setInterval(loadFiles, 10000);
-            function loadFiles() {
-            $.ajax({
-            url : "ajax-files.php",
-            dataType: "text",
-            success : function (data) {
-                $("#files").html(data);
+                var chartSignalData = {
+                  series: [
+                    {
+                      name: 'viterbi',
+                      data: dataViterbi
+                    },
+                    {
+                      name: 'packets',
+                      data: dataPackets
+                    },
+                    {
+                      name: 'drops',
+                      data: dataDrops
+                    }
+                  ]
+                };
+                chartSignal.update(chartSignalData);
                 var d = new Date();
-                $("time.timeagoFiles").attr('datetime',d.toISOString());
-                $("time.timeagoFiles").timeago();
-            }
-            });
-            }
+                $("time.timeagoSignal").attr('datetime',d.toISOString());
+                $("time.timeagoSignal").timeago();
+              }
+              });
+              }
+            //=======================================//
+              loadFiles();
+              var tmrFiles = setInterval(loadFiles, 10000);
+              function loadFiles() {
+              $.ajax({
+              url : "ajax-files.php",
+              dataType: "text",
+              success : function (data) {
+                  $("#files").html(data);
+                  var d = new Date();
+                  $("time.timeagoFiles").attr('datetime',d.toISOString());
+                  $("time.timeagoFiles").timeago();
+              }
+              });
+              }
             //=======================================//
             });
             </script>

@@ -22,11 +22,13 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
     <title>GOES Tools Panel<?php if (isset($title)) { echo " - " . $title; } ?></title>
     <meta content='width=device-width, initial-scale=1.0, user-scalable=1, shrink-to-fit=no' name='viewport' />
+    <meta http-equiv="refresh" content="300">
     <link href="./assets/css/google-fonts.css" rel="stylesheet" />
     <link href="./assets/css/font-awesome.min.css" rel="stylesheet" />
     <link href="./assets/css/bootstrap.min.css" rel="stylesheet" />
     <link href="./assets/css/light-bootstrap-dashboard.css?v=2.0.0 " rel="stylesheet" />
     <!--   Core JS Files   -->
+    <script src="./assets/js/HackTimer/HackTimer.min.js"></script>
     <script src="./assets/js/core/jquery.3.2.1.min.js" type="text/javascript"></script>
     <script src="./assets/js/core/popper.min.js" type="text/javascript"></script>
     <script src="./assets/js/core/bootstrap.min.js" type="text/javascript"></script>

@@ -1,6 +1,7 @@
 <?php
+set_time_limit(362);
 require_once('load.php');
 ###########################################
-process_custom_products();
+signal_data_listener(360);
 ###########################################
 ?>

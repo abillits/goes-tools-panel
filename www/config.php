@@ -6,18 +6,17 @@ define('HOME', 'product-viewer'); //DEFAUlT: product-viewer - product-viewer, nw
 /* Settings for Signal Status page */
 define('SIGNAL_STATUS_CHART_MINUTES', 10); //DEFAULT: 10
 define('SIGNAL_STATUS_FILES_NUM', 10); //DEFAULT: 10
-/* Animation Generating Method
-Notes:
-1) client animation generation method generates animations via javascript in the browser. Requires a decent client machine (ie: some phones may not work) and produces inferior quality animations but puts less strain on the server. Recommended for anything less than a PI.
-2) server animation generation method generates animations via ffmpeg (see installation instructions). Works with any client machine and roduces better quality animations but puts a strain on server cpu/memory. Recommended for PI 4 (1GB works, 2GB is better, 4GB not really needed).
-3) Using the server animation generation method on anything less than a PI 4 will likely result in dropped GOES packets.
-*/
-define('ANIMATION_GEN', 'client'); //DEFAULT: client - client OR server
 /* Max size of animations in pixels */
-define('ANIMATION_MAX_HEIGHT', 720); //DEFAULT: 720 - Keep to 720 or lower for client animation generation, 1000 for server generation on anything less than a PI 4 - set to false to disable
-define('ANIMATION_MAX_WIDTH', 720); //DEFAULT: 720 - Keep to 720 or lower for client animation generation, 1000 for server generation on anything less than a PI 4 - set to false to disable
+define('ANIMATION_MAX_HEIGHT', 2000); //DEFAULT: 2000 - set to false to disable
+define('ANIMATION_MAX_WIDTH', 2000); //DEFAULT: 2000 - set to false to disable
 /* ffmpeg threads */
-define('FFMPEG_THREADS', 1); //DEFAULT 1 - Set this to 2 for a PI 4 - leave at 1 for anything else
+define('FFMPEG_THREADS', 2); //DEFAULT 2 - Set this to 1 if you generate a lot of 4+ hour full disk images.
 /* Old File Cleanup */
 define('CLEAN_OLDER_THAN_X_HOURS', 24); //DEFAULT 24 - Set to whatever you wish/have disk space for - set to false to disable
+/* Custom products */
+//custom_product($src_dir,$dst_dir,$crop_x,$crop_y,$crop_w,$crop_h,$dst_w,$dst_h);
+/* Custom product examples (comment out, edit, or remove) */
+custom_product("data/goes16/fd/ch13_enhanced","data/goes16/se/ch13_enhanced",1422,718,1600,900,1920,1080);
+custom_product("data/goes16/fd/ch13_enhanced","data/goes16/al/ch13_enhanced",1799,879,800,450,1920,1080);
+
 ?>
