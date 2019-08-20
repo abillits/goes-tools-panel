@@ -10,7 +10,7 @@ if ( !defined('BASE_DIR') ) {
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
-define('VERSION', '1.0.0');
+define('VERSION', '1.0.1');
 ###########################################
 /*
 source-dir

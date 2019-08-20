@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1] - 2019-08-20
+- MINOR RELEASE
+### Fixed
+- Fixed goesproc.service and goesrecv.service
+- Fixed signal chart (signal status page)
+- Added "received time" to files table (signal status page)
+
 ## [1.0.0] - 2019-08-19
 - MAJOR RELEASE
 ### Fixed

@@ -12,6 +12,11 @@ function process_signal_data($signal_data) {
   $vit = round($vit / count($signal_data));
   unset($signal_data);
 
+  if ($ok < 5 && $drop == 0) {
+    //if both ok packets and dropped packets = zero then this isn't valid data.
+    return;
+  }
+
   $new_signal_data = array();
   $new_signal_data['vit'] = $vit;
   $new_signal_data['ok'] = $ok;

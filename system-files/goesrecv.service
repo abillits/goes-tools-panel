@@ -8,8 +8,7 @@ After=network.target
 
 [Service]
 # EnvironmentFile=/etc/default/goestools
-ExecStart=/usr/local/bin/goesrecv -i 10 -c /home/pi/goesrecv.conf
-#ExecStart=/bin/sh -c 'touch /var/log/goestools/goesrecv.log; chmod 0644 /var/log/goestools/goesrecv.log; /usr/local/bin/goesrecv -c /home/pi/goesrecv.conf -v -i 10 > /var/log/goestools/goesrecv.log'
+ExecStart=/usr/local/bin/goesrecv -i 10 -c /home/pi/goesrecv.conf 
 StandardOutput=null
 Type=simple
 Restart=on-failure
@@ -18,3 +17,4 @@ Nice=-5
 
 [Install]
 WantedBy=default.target
+
