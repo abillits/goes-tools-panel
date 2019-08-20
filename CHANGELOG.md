@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.0.0] - 2019-08-xx
+## [1.0.0] - 2019-08-19
 - MAJOR RELEASE
 ### Fixed
 - Footer links
