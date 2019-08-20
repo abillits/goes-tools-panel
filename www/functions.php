@@ -18,12 +18,20 @@ function process_signal_data($signal_data) {
   $new_signal_data['drop'] = $drop;
 
   $signal_data = get_meta("signal-data", array());
+  if (!is_array($signal_data)) {
+    $signal_data = maybe_serialize($signal_data);
+    if (!is_array($signal_data)) {
+      unset($signal_data);
+      $signal_data = array();
+    }
+  }
   $signal_data[time()] = $new_signal_data;
   unset($new_signal_data);
 
-  //krsort($signal_data);
+  krsort($signal_data);
+  $signal_data = array_slice($signal_data, 0, SIGNAL_STATUS_CHART_MINUTES * 6, true);
   ksort($signal_data);
-  update_meta("signal-data", array_slice($signal_data, 0, SIGNAL_STATUS_CHART_MINUTES * 6, true));
+  update_meta("signal-data", $signal_data);
 }
 
 function signal_data_listener($run_for = 5) {

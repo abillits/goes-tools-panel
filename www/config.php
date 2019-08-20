@@ -5,7 +5,7 @@ define('AJAX_KEY_SALT', 'M)(@#*M_@IE_@)(IKF2-[foi-203mic-fie2[fi]])'); //Change 
 define('HOME', 'product-viewer'); //DEFAUlT: product-viewer - product-viewer, nws-viewer, server, OR signal
 /* Settings for Signal Status page */
 define('SIGNAL_STATUS_CHART_MINUTES', 10); //DEFAULT: 10
-define('SIGNAL_STATUS_FILES_NUM', 10); //DEFAULT: 10
+define('SIGNAL_STATUS_FILES_NUM', 7); //DEFAULT: 7
 /* Max size of animations in pixels */
 define('ANIMATION_MAX_HEIGHT', 2000); //DEFAULT: 2000 - set to false to disable
 define('ANIMATION_MAX_WIDTH', 2000); //DEFAULT: 2000 - set to false to disable
