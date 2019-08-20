@@ -16,7 +16,7 @@ define('CLEAN_OLDER_THAN_X_HOURS', 24); //DEFAULT 24 - Set to whatever you wish/
 /* Custom products */
 //custom_product($src_dir,$dst_dir,$crop_x,$crop_y,$crop_w,$crop_h,$dst_w,$dst_h);
 /* Custom product examples (comment out, edit, or remove) */
-custom_product("data/goes16/fd/ch13_enhanced","data/goes16/se/ch13_enhanced",1422,718,1600,900,1920,1080);
-custom_product("data/goes16/fd/ch13_enhanced","data/goes16/al/ch13_enhanced",1799,879,800,450,1920,1080);
+custom_product("data/goes16/fd/ch13_enhanced","data/goes16/se/ch13_enhanced",1422,718,1600,900,1920,1080); //takea a crop from full disk image
+custom_product("data/goes16/fd/ch13_enhanced","data/goes16/al/ch13_enhanced",1799,879,800,450,1920,1080); //takea a smaller crop from full disk image and enlarges it
 
 ?>
